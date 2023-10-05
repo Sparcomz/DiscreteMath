@@ -1,3 +1,5 @@
+namespace lecture_03_04 
+
 /-!
 Note: These notes are not yet complete. They
 current extend the material presented at the
@@ -181,9 +183,27 @@ type in question is inferred automatically from the value to
 be returned. 
 -/
 
-#eval id_poly' 7          -- α = Nat, inferred!
-#eval id_poly' "Hello!"   -- α = String, inferred!
-#eval id_poly' true       -- α = Bool, inferred!
+#eval id_poly'' 7          -- α = Nat, inferred!
+#eval id_poly'' "Hello!"   -- α = String, inferred!
+#eval id_poly'' true       -- α = Bool, inferred!
+
+#eval id_poly'' Nat 7             -- error
+#eval id_poly'' String "Hello!"   -- error
+#eval id_poly'' Bool true         -- error
+
+/-!
+Sometimes we will have to give type arguments
+explicitly, even when they're declared to be
+implicit. In these cases, we disable implicit
+argument inference, In Lean, by writing an @
+before the given expression. Note that in the
+following examples we once again can, and must,
+give the type argument values explicitly. 
+-/
+
+#eval @id_poly'' Nat 7          -- α = Nat, inferred!
+#eval @id_poly'' String "Hello!"   -- α = String, inferred!
+#eval @id_poly'' Bool true       -- α = Bool, inferred!
 
 /-!
 ## Extended Example: A polymorphic apply2 function
@@ -294,76 +314,111 @@ string argument values.
 
 You can make up your own String → String functions.
 For example, a function, exclaim : String → String,
-applied to a string, s, could (append s "!"). There
-is a notation for this: *s ++ "!"*. Go ahead and 
-complete its definition here.
+applied to a string, s, could return (append s "!"). 
+There is an infix notation: *s ++ "!"*. 
 -/
 
 def exclaim : String → String 
-| s => _    -- with s bound to first argument value
+| s => s ++ "!"    
 
 #eval exclaim "Hello"             -- apply it once
 #eval exclaim (exclaim "Hello")   -- apply it twice
 
 /-!
-Now you can use this function, exclaimm as a first
-argument to apply2_string. The result is a function
-that is waiting for an argument, s, and that then
-returns returns the result of applying the "baked 
-in") function, f, to s, to compute (f s), and then 
-applies f to that value, for the second time. The
-result is the value of *f (f s))*.  
+Now you can use this function, exclaim, as a first
+argument to apply2_string. Defining this function 
+is easy, as it's the same as apply2_nat except for
+the type of objects being handled: String not Nat.
+-/
 
-Show that you can write the programs analogous
-to the corresponding ones for Natty things but
-now for Stringy things, while writing demo and
-test cases. Key idea: A test case defines some
-value to be computed *and* an expected result.
-The passing or failure of a test case reflects
-the consistency of expected and compute value.
+def apply2_string : (String → String) → String → String
+| f, a => f (f a)
+
+#eval apply2_string exclaim "Hello" -- expect "Hello!!"
+
+/-!
+It works!
+-/
 
 /-!
 ## Generalizing the Type of Objects Handled
 
 At this point it should be clear, by analogy
 with earlier material, that we can generalize
-over the specific Nat and String types in the
-previous examples to a general type: call it α!
-Replace the _ here with the *rest of the type*
-of the apply2 function, given that we alrady
-have a specific type in hand, such as String
-or Nat, to which we've bound α. You can now
-use α to specify the rest of the type of the
-function.  
+from the specific Nat and String types, in the
+previous examples, to write a version of apply2
+that can handle objects of any type, α. The
+trick, as usual, is to handle the variation in
+object types by adding a type *parameter*.
 -/
 
 def apply2' : (α : Type) → (α → α) → α → α  
 | _, f, a => f (f a)
 
+/-
+Let's explain this function in detail:
 
-#eval apply2 Nat Nat.succ 0   -- expect 2
-#eval apply2 Nat double 1     -- expect 4
-#eval apply2 Nat square 2     -- expect 16
-#eval apply2 String exclaim "Hello" 
+- def is the keyword for binding names to values
+- apply2' is the name of our new function
+- the type of the function is give after the :
+- the function takes three arguments:
+  - a type value, α, such as Nat or String
+  - a function of type α → α, such as exclaim
+  - a value of type α 
+- next is rule for computing the result
+  - first we match all three arguments
+    - the type value (we don't have to name it)
+    - the function (we name it f)
+    - the argument (we name it a)
+  - after the => is the expression for the result
+
+We can now try it out to see that it works!
+-/
+
+#eval apply2' Nat Nat.succ 0         -- expect 2
+#eval apply2' Nat double 1           -- expect 4
+#eval apply2' Nat square 2           -- expect 16
+#eval apply2' String exclaim "Hello" -- "Hello!!" 
 
 /-!
 ## Type Inference and Implicit Arguments
 
 As a final exercise in good notation, redefine
 apply2 (calling it apply2') so that the first
-argument, the type value, is implicit: where
-Lean infers its value from the types of the 
-remaining arguments. When you get it right, the
-following test cases should work.
+argument, the type value, is implicit. Write the
+definition so that Lean infers the value of α 
+(the first, type, argument) from the values of 
+the remaining arguments. When you get it right, 
+the following test cases should work.
 -/
 
--- Now you can and should write the code here:
+-- Answer:
 
-def apply2' : { α : Type } → (α → α) → α → α 
+def apply2 : { α : Type } → (α → α) → α → α 
 | _, f, a => f (f a)
 
--- same tests again
-#eval apply2' Nat.succ 0   -- expect 2
-#eval apply2' double 1     -- expect 4
-#eval apply2' square 2     -- expect 16
-#eval apply2' exclaim "Hello" -- Hello!!
+-- Now the type arguments are implicit!
+#eval apply2 Nat.succ 0   -- expect 2
+#eval apply2 double 1     -- expect 4
+#eval apply2 square 2     -- expect 16
+#eval apply2 exclaim "Hello" -- Hello!!
+
+/-!
+This example is an important achievement. 
+It exhibits the following fundamental concepts:
+- every value has a type
+- types are values too; their type is Type
+- types parameters make definitions polymorphic
+- type arguments can be implicit and inferred
+- functions are values, too, and can be arguments
+
+With all the work required to get to this point
+now in hand, we're ready to introduce a new and
+important concept in mathematics. 
+
+Note: The concept is introduced as a homework
+assignment, then reviewed in class. Once it's
+done, this lecture then continues to completion.
+-/ 
+
+end lecture_03_04 
