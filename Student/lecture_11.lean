@@ -415,7 +415,12 @@ def Interp := var → Bool  -- interp is a type
 -- examples
 def all_true  : Interp := fun _ => true
 def all_false : Interp := fun _ => false
-
+def first_true : Interp :=
+  fun v =>
+  match v.n with 
+  | 0 => true
+  | 1 => false
+  | _ => false
 /-!
 Exercise: Define the *i₂* interpretation from above
 as a function in Lean. It will help to give the name

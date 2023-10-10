@@ -679,7 +679,21 @@ cases to demonstrate your results.
 -/
 
 -- Here
+def contains_true : List Bool -> Bool
+| []    => false
+| (h::t) => h || contains_true t
 
+-- Check if an expression is satisfiable
+def sat (e : Expr) : Bool :=
+  contains_true (truth_table_outputs e)
+
+-- Check if an expression is unsatisfiable
+def unsat (e : Expr) : Bool :=
+  ¬(sat e)
+
+-- Check if an expression is valid
+def valid (e : Expr) : Bool :=
+  ¬(unsat e)
 
 -- A few tests
 #eval is_valid (X)                      -- expect false
@@ -689,7 +703,7 @@ cases to demonstrate your results.
 #eval is_valid (X ∨ ¬X)                 -- expect true
 #eval is_valid ((¬(X ∧ Y) ⇒ (¬X ∨ ¬Y))) -- expect true
 #eval is_valid (¬(X ∨ Y) ⇒ (¬X ∧ ¬Y))   -- expect true
-#eval is_valid ((X ∨ Y) ⇒ (X → ¬Y))     -- expect false
+#eval is_valid ((X ∨ Y) ⇒ (X ⇒ ¬Y))     -- expect false
 
 -- Test cases
 

@@ -249,7 +249,8 @@ defined.
 def e0 := (¬J ∨ ¬C) ⇒ ¬(J ∧ C)
 
 -- YOU DO THE REST
-
+def e1 := ¬(J ∧ C) ⇒ (¬J ∨ ¬C)
+def e2 := ¬(B ∧ A) ⇒ (¬B ∨ ¬A)
 
 /-!
 ### #4. Implement Syntax and Semantics for Implies and Biimplication
