@@ -682,18 +682,21 @@ cases to demonstrate your results.
 def contains_true : List Bool -> Bool
 | []    => false
 | (h::t) => h || contains_true t
+def contains_onlytrue : List Bool -> Bool
+| []  => true
+| (h::t) => h ∧ contains_onlytrue t
 
 -- Check if an expression is satisfiable
-def sat (e : Expr) : Bool :=
+def is_sat (e : Expr) : Bool :=
   contains_true (truth_table_outputs e)
 
 -- Check if an expression is unsatisfiable
-def unsat (e : Expr) : Bool :=
-  ¬(sat e)
+def is_unsat (e : Expr) : Bool :=
+  ¬(is_sat e)
 
 -- Check if an expression is valid
-def valid (e : Expr) : Bool :=
-  ¬(unsat e)
+def is_valid (e : Expr) : Bool :=
+  contains_onlytrue (truth_table_outputs e)
 
 -- A few tests
 #eval is_valid (X)                      -- expect false
