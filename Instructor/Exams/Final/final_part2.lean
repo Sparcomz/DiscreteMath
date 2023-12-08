@@ -17,6 +17,7 @@ for this set.
 -/
 
 -- Here
+def odds : set Nat := {n | n % 2 = 1}
 
 /-!
 ## Problem #2:
@@ -29,6 +30,7 @@ of another number, namely m = 6.
 -/
 
 -- Here
+def perfect_squares : set Nat := { n | ∃ m, n = m^2 }
 
 /-!
 ## Problem #3:
@@ -38,6 +40,7 @@ to be the intersection of the odds and the perfect squares.
 -/
 
 -- Here
+def odd_perfects : set Nat := { n | n ∈ odds ∧ n ∈ perfect_squares }
 
 /-!
 ## Problem #4:
@@ -47,3 +50,15 @@ Hint: A proof within a proof.
 -/
 
 -- Here
+example : 9 ∈ odd_perfects :=
+begin
+  split,
+  {
+    unfold odds,
+    exact rfl,
+  },
+  {
+    unfold perfect_squares,
+    exact ⟨3, rfl⟩,
+  }
+end

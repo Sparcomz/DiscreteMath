@@ -117,10 +117,11 @@ formal proof of it, and briefly explain in English how you
 proved it.
 -/
 
-example : ∃ n, square n 4 := Exists.intro 2 (_) -- fill in _
+example : ∃ n, square n 4 := Exists.intro 2 (sqr 2 4 rfl) -- fill in _
 
 /-
-English language translation of propostion here:
+English language translation of propostion here: There exists a natural number n for which the relation square n 4 is true.
+In other words, there exists a number whose square is 4.
 -/
 
 /-!
@@ -450,10 +451,9 @@ Notes: (1) fill in the _ holes. (2) you can and will have to
 write separate tactic applications indented on separate lines.
 -/
 
-theorem eq_rel_trans {α : Type} {a b c : α} :
-_               -- fill with proposition: equality is transitive
-| _, _ => by
-  _             -- fill in your proof of it here
+theorem eq_rel_trans {α : Type} {a b c : α} : (a = b) → (b = c) → (a = c) :=     -- fill with proposition: equality is transitive
+λ h₁ h₂ => by
+  rw [h₁, h₂]                 -- fill in your proof of it here
 
 /-!
 ## Exam Question #3
@@ -468,3 +468,10 @@ is not.
 -/
 
 -- Your answer here
+inductive nat_successor : Nat → Nat → Prop
+| succ_rel (a : Nat) : nat_successor a (Nat.succ a)
+
+open nat_successor
+
+example : nat_successor 2 3 := succ_rel 2
+example : ¬ nat_successor 2 4 := λ h => nomatch h
